@@ -10,6 +10,12 @@ import {Observable} from "rxjs/Observable";
 import {merge} from "rxjs/observable/merge";
 import {from} from "rxjs/observable/from";
 import * as BSDOM from "../lib/BSDOM";
+import {filter} from "rxjs/operators/filter";
+import {map} from "rxjs/operators/map";
+import {mergeMap} from "rxjs/operators/mergeMap";
+import {take} from "rxjs/operators/take";
+import {tap} from "rxjs/operators/tap";
+import {mapTo} from "rxjs/operators/mapTo";
 
 var hiddenElem;
 
@@ -106,22 +112,27 @@ export function reload(document: Document, navigator: Navigator) {
 
         return merge(
             from([].slice.call(document.images))
-                .filter((img: HTMLImageElement) => pathsMatch(path, pathFromUrl(img.src)))
-                .map((img: HTMLImageElement) => {
-                    return BSDOM.propSet({
-                        target: img,
-                        prop: 'src',
-                        value: generateCacheBustUrl(img.src, expando),
-                        pathname: getLocation(img.src).pathname
+                .pipe(
+                    filter((img: HTMLImageElement) => pathsMatch(path, pathFromUrl(img.src)))
+                    , map((img: HTMLImageElement) => {
+                        const payload = {
+                            target: img,
+                            prop: 'src',
+                            value: generateCacheBustUrl(img.src, expando),
+                            pathname: getLocation(img.src).pathname
+                        };
+                        return BSDOM.propSet(payload);
                     })
-                }),
+                ),
             from(IMAGE_STYLES)
-                .flatMap(({ selector, styleNames }) => {
-                    return from(document.querySelectorAll(`[style*=${selector}]`))
-                        .flatMap((img: HTMLImageElement) => {
-                            return reloadStyleImages(img.style, styleNames, path, expando);
-                        })
-                })
+                .pipe(
+                    mergeMap(({ selector, styleNames }) => {
+                        return from(document.querySelectorAll(`[style*=${selector}]`))
+                            .flatMap((img: HTMLImageElement) => {
+                                return reloadStyleImages(img.style, styleNames, path, expando);
+                            })
+                    })
+                )
         );
 
         // if (document.styleSheets) {
@@ -159,9 +170,9 @@ export function reload(document: Document, navigator: Navigator) {
     }
 
     function reloadStyleImages(style, styleNames: string[], path, expando): Observable<any> {
-        return from(styleNames)
-            .filter(styleName => typeof style[styleName] === 'string')
-            .map((styleName: string) => {
+        return from(styleNames).pipe(
+            filter(styleName => typeof style[styleName] === 'string')
+            , map((styleName: string) => {
                 let pathName;
                 const value = style[styleName];
                 const newValue = value.replace(new RegExp(`\\burl\\s*\\(([^)]*)\\)`), (match, src) => {
@@ -185,8 +196,9 @@ export function reload(document: Document, navigator: Navigator) {
                     pathName
                 ];
             })
-            .filter(([style, styleName, value, newValue]) => newValue !== value)
-            .map(([style, styleName, value, newValue, pathName]) => BSDOM.styleSet({style, styleName, value, newValue, pathName}))
+            , filter(([style, styleName, value, newValue]) => newValue !== value)
+            , map(([style, styleName, value, newValue, pathName]) => BSDOM.styleSet({style, styleName, value, newValue, pathName}))
+        )
     }
 
     function swapFile(elem, domData, options, document, navigator) {
@@ -278,19 +290,23 @@ export function reload(document: Document, navigator: Navigator) {
         }
 
         return Observable.create(obs => clone.onload = () => obs.next(true))
-            .take(1)
-            .flatMap(() => {
-                return Observable
-                    .timer(additionalWaitingTime)
-                    .do(() => {
-                        if (link && !link.parentNode) {
-                            return;
-                        }
-                        link.parentNode.removeChild(link);
-                        clone.onreadystatechange = null;
-                    })
-                    .mapTo(BSDOM.linkReplace({target: clone, nextHref, prevHref, pathname, basename}))
-            });
+            .pipe(
+                take(1)
+                , mergeMap(() => {
+                    return Observable
+                        .timer(additionalWaitingTime)
+                        .pipe(
+                            tap(() => {
+                                if (link && !link.parentNode) {
+                                    return;
+                                }
+                                link.parentNode.removeChild(link);
+                                clone.onreadystatechange = null;
+                            })
+                            , mapTo(BSDOM.linkReplace({target: clone, nextHref, prevHref, pathname, basename}))
+                        )
+                })
+            )
     }
 
     function reattachImportedRule({ rule, index, link }, document: Document): Observable<any> {
@@ -315,28 +331,30 @@ export function reload(document: Document, navigator: Navigator) {
         }
 
         return Observable.timer(200)
-            .do(() => {
-                if (tempLink.parentNode) { tempLink.parentNode.removeChild(tempLink); }
+            .pipe(
+                tap(() => {
+                    if (tempLink.parentNode) { tempLink.parentNode.removeChild(tempLink); }
 
-                // if another reattachImportedRule call is in progress, abandon this one
-                if (rule.__LiveReload_newHref !== href) { return; }
+                    // if another reattachImportedRule call is in progress, abandon this one
+                    if (rule.__LiveReload_newHref !== href) { return; }
 
-                parent.insertRule(newRule, index);
-                parent.deleteRule(index+1);
+                    parent.insertRule(newRule, index);
+                    parent.deleteRule(index+1);
 
-                // save the new rule, so that we can detect another reattachImportedRule call
-                rule = parent.cssRules[index];
-                rule.__LiveReload_newHref = href;
-            })
-            .flatMap(() => {
-                return Observable.timer(200)
-                    .do(() => {
-                        // if another reattachImportedRule call is in progress, abandon this one
-                        if (rule.__LiveReload_newHref !== href) { return; }
-                        parent.insertRule(newRule, index);
-                        return parent.deleteRule(index+1);
-                    });
-            });
+                    // save the new rule, so that we can detect another reattachImportedRule call
+                    rule = parent.cssRules[index];
+                    rule.__LiveReload_newHref = href;
+                })
+                , mergeMap(() => {
+                    return Observable.timer(200)
+                        .do(() => {
+                            // if another reattachImportedRule call is in progress, abandon this one
+                            if (rule.__LiveReload_newHref !== href) { return; }
+                            parent.insertRule(newRule, index);
+                            return parent.deleteRule(index+1);
+                        });
+                })
+            );
     }
 
     function generateCacheBustUrl(url, expando = generateUniqueString(Date.now())) {

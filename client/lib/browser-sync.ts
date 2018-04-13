@@ -1,5 +1,5 @@
 import { getByPath, isUndefined } from "./browser.utils";
-import {InitOptions} from "./types";
+import { InitOptions } from "./types";
 
 interface BrowserSyncInit {
     socket: any;

@@ -6,10 +6,11 @@ import { async } from "rxjs/scheduler/async";
 import { concat } from "rxjs/observable/concat";
 import { getDocumentScrollSpace } from "./browser.utils";
 import { merge } from "rxjs/observable/merge";
-import * as ScrollEvent from './messages/ScrollEvent';
-import * as ClickEvent from './messages/ClickEvent';
-import * as KeyupEvent from './messages/KeyupEvent';
-import * as FormToggleEvent from './messages/FormToggleEvent';
+import * as ScrollEvent from "./messages/ScrollEvent";
+import * as ClickEvent from "./messages/ClickEvent";
+import * as KeyupEvent from "./messages/KeyupEvent";
+import * as FormToggleEvent from "./messages/FormToggleEvent";
+import { pluck } from "rxjs/operators/pluck";
 
 export enum EffectNames {
     FileReload = "@@FileReload",
@@ -95,7 +96,7 @@ export const outputHandlers$ = new BehaviorSubject({
             .withLatestFrom(
                 inputs.window$,
                 inputs.document$,
-                inputs.option$.pluck("scrollProportionally")
+                inputs.option$.pipe(pluck("scrollProportionally"))
             )
             .partition(([event]) => event.tagName === "document");
 

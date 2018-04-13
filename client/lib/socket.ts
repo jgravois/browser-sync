@@ -1,6 +1,8 @@
 import socket = require("socket.io-client");
 import { Observable } from "rxjs";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { of } from "rxjs/observable/of";
+import { share } from "rxjs/operators/share";
 
 /**
  * Alias for socket.emit
@@ -25,15 +27,15 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 // }
 
 export function initWindow() {
-    return Observable.of(window);
+    return of(window);
 }
 
 export function initDocument() {
-    return Observable.of(document);
+    return of(document);
 }
 
 export function initNavigator() {
-    return Observable.of(navigator);
+    return of(navigator);
 }
 export function initOptions() {
     return new BehaviorSubject(window.___browserSync___.options);
@@ -56,7 +58,7 @@ export function initSocket() {
             onevent.call(this, packet);
             obs.next(packet.data);
         };
-    }).share();
+    }).pipe(share());
 
     const io$ = new BehaviorSubject(io);
 

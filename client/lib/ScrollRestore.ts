@@ -7,14 +7,14 @@ import { empty } from "rxjs/observable/empty";
 import { of } from "rxjs/observable/of";
 import * as Log from "./Log";
 import * as BSDOM from "./BSDOM";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { take } from "rxjs/operators/take";
+import { mergeMap } from "rxjs/operators/mergeMap";
+import { map } from "rxjs/operators/map";
 
-namespace ScrollRestore {
-    export const PREFIX = "<<BS_START>>";
-    export const SUFFIX = "<<BS_START>>";
-    export const regex = new RegExp(
-        ScrollRestore.PREFIX + "(.+?)" + ScrollRestore.SUFFIX
-    );
-}
+export const PREFIX = "<<BS_START>>";
+export const SUFFIX = "<<BS_START>>";
+export const regex = new RegExp(PREFIX + "(.+?)" + SUFFIX);
 
 export function initWindowName(window: Window) {
     const saved = (() => {
@@ -23,7 +23,7 @@ export function initWindowName(window: Window) {
          * BS json blob & parse it.
          */
         try {
-            const json = window.name.match(ScrollRestore.regex);
+            const json = window.name.match(regex);
             if (json) {
                 return JSON.parse(json[1]);
             }
@@ -37,7 +37,7 @@ export function initWindowName(window: Window) {
      * to ensure we don't interfere with any other
      * libs who may be using it.
      */
-    window.name = window.name.replace(ScrollRestore.regex, "");
+    window.name = window.name.replace(regex, "");
 
     /**
      * If the JSON was parsed correctly, try to
@@ -55,15 +55,16 @@ export function initWindowName(window: Window) {
 
 export const scrollRestoreHandlers$ = new BehaviorSubject({
     [EffectNames.SetOptions]: (xs, inputs: Inputs) => {
-        return xs
-            .withLatestFrom(inputs.window$)
-            .take(1)
-            .flatMap(([options, window]) => {
+        return xs.pipe(
+            withLatestFrom(inputs.window$),
+            take(1),
+            mergeMap(([options, window]) => {
                 if (options.scrollRestoreTechnique === "window.name") {
                     return initWindowName(window);
                 }
                 return empty();
-            });
+            })
+        );
     },
     /**
      * Save the current scroll position
@@ -72,21 +73,22 @@ export const scrollRestoreHandlers$ = new BehaviorSubject({
      * @param {Inputs} inputs
      */
     [EffectNames.PreBrowserReload]: (xs: Observable<any>, inputs: Inputs) => {
-        return xs
-            .withLatestFrom(inputs.window$, inputs.document$)
-            .map(([, window, document]) => {
+        return xs.pipe(
+            withLatestFrom(inputs.window$, inputs.document$),
+            map(([, window, document]) => {
                 return [
                     window.name,
-                    ScrollRestore.PREFIX,
+                    PREFIX,
                     JSON.stringify({
                         bs: {
                             hardReload: true,
                             scroll: getBrowserScrollPosition(window, document)
                         }
                     }),
-                    ScrollRestore.SUFFIX
+                    SUFFIX
                 ].join("");
-            })
-            .map(value => BSDOM.setWindowName(value));
+            }),
+            map(value => BSDOM.setWindowName(value))
+        );
     }
 });

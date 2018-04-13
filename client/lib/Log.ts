@@ -3,6 +3,12 @@ import { timer } from "rxjs/observable/timer";
 import { Observable } from "rxjs/Observable";
 import { of } from "rxjs/observable/of";
 import { Nanologger } from "../vendor/logger";
+import { filter } from "rxjs/operators/filter";
+import { tap } from "rxjs/operators/tap";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { switchMap } from "rxjs/operators/switchMap";
+import { Inputs } from "./index";
+import { pluck } from "rxjs/operators/pluck";
 
 export function initLogger(options: IBrowserSyncOptions) {
     const log = new Nanologger(options.logPrefix, {
@@ -37,68 +43,65 @@ export function overlayInfo(
 }
 
 export const logHandler$ = new BehaviorSubject({
-    [LogNames.Log]: (xs, inputs) => {
-        return (
-            xs
-                /**
-                 * access injectNotification from the options stream
-                 */
-                .withLatestFrom(
-                    inputs.logInstance$,
-                    inputs.option$.pluck("injectNotification")
-                )
-                /**
-                 * only accept messages if injectNotification !== console
-                 */
-                .filter(
-                    ([, , injectNotification]) =>
-                        injectNotification === "console"
-                )
-                .do(incoming => {
-                    const event: ConsolePayload = incoming[0];
-                    const log: Nanologger = incoming[1];
-                    switch (event[0]) {
-                        case LogNames.Info: {
-                            return log.info.apply(log, event[1]);
-                        }
-                        case LogNames.Debug: {
-                            return log.debug.apply(log, event[1]);
-                        }
+    [LogNames.Log]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            /**
+             * access injectNotification from the options stream
+             */
+            withLatestFrom(
+                inputs.logInstance$,
+                inputs.option$.pipe(pluck("injectNotification"))
+            ),
+            /**
+             * only accept messages if injectNotification !== console
+             */
+            filter(
+                ([, , injectNotification]) => injectNotification === "console"
+            ),
+            tap(incoming => {
+                const event: ConsolePayload = incoming[0];
+                const log: Nanologger = incoming[1];
+                switch (event[0]) {
+                    case LogNames.Info: {
+                        return log.info.apply(log, event[1]);
                     }
-                })
+                    case LogNames.Debug: {
+                        return log.debug.apply(log, event[1]);
+                    }
+                }
+            })
         );
     },
-    [Overlay.Info]: (xs: Observable<any>, inputs) => {
-        return (
-            xs
-                .withLatestFrom(
-                    inputs.option$,
-                    inputs.notifyElement$,
-                    inputs.document$
-                )
-                /**
-                 * Reject all notifications if notify: false
-                 */
-                .filter(([, options]) => options.notify)
-                /**
-                 * Set the HTML of the notify element
-                 */
-                .do(([event, options, element, document]) => {
-                    element.innerHTML = event[0];
-                    element.style.display = "block";
-                    document.body.appendChild(element);
-                })
-                /**
-                 * Now remove the element after the given timeout
-                 */
-                .switchMap(([event, options, element, document]) => {
-                    return timer(event[1] || 2000).do(() => {
-                        element.style.display = "none";
-                        if (element.parentNode) {
-                            document.body.removeChild(element);
-                        }
-                    });
-                })
+    [Overlay.Info]: (xs: Observable<any>, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(
+                inputs.option$,
+                inputs.notifyElement$,
+                inputs.document$
+            ),
+            /**
+             * Reject all notifications if notify: false
+             */
+            filter(([, options]) => Boolean(options.notify)),
+            /**
+             * Set the HTML of the notify element
+             */
+            tap(([event, options, element, document]) => {
+                element.innerHTML = event[0];
+                element.style.display = "block";
+                document.body.appendChild(element);
+            }),
+            /**
+             * Now remove the element after the given timeout
+             */
+            switchMap(([event, options, element, document]) => {
+                return timer(event[1] || 2000).do(() => {
+                    element.style.display = "none";
+                    if (element.parentNode) {
+                        document.body.removeChild(element);
+                    }
+                });
+            })
         );
     }
 });

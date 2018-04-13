@@ -1,7 +1,6 @@
 ///<reference path="types.ts"/>
 import { Observable } from "rxjs/Observable";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { Subject } from "rxjs/Subject";
 import { zip } from "rxjs/observable/zip";
 import { initDocument, initOptions, initSocket, initWindow } from "./socket";
 import { initNotify } from "./notify";
@@ -9,10 +8,16 @@ import { domHandlers$ } from "./BSDOM";
 import { SocketEvent, socketHandlers$ } from "./SocketNS";
 import { merge } from "rxjs/observable/merge";
 import { initLogger, logHandler$ } from "./Log";
-import { EffectNames, outputHandlers$ } from "./Effects";
+import { outputHandlers$ } from "./Effects";
 import { Nanologger } from "../vendor/logger";
 import { scrollRestoreHandlers$ } from "./ScrollRestore";
 import { initOutgoing } from "./outgoing";
+import { groupBy } from "rxjs/operators/groupBy";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { mergeMap } from "rxjs/operators/mergeMap";
+import { share } from "rxjs/operators/share";
+import { filter } from "rxjs/operators/filter";
+import { pluck } from "rxjs/operators/pluck";
 
 export interface Inputs {
     window$: Observable<Window>;
@@ -26,14 +31,10 @@ export interface Inputs {
     outgoing$: Observable<any>;
 }
 
-export type EffectStream = Observable<[EffectNames, any]>;
-export type AnyStream = Observable<any | [any, any]>;
-
 const window$ = initWindow();
 const document$ = initDocument();
 const { socket$, io$ } = initSocket();
 const option$ = initOptions();
-console.log(option$.getValue());
 const navigator$ = initOptions();
 const notifyElement$ = initNotify(option$.getValue());
 const logInstance$ = initLogger(option$.getValue());
@@ -53,14 +54,15 @@ const inputs: Inputs = {
 
 function getStream(name: string, inputs) {
     return function(handlers$, inputStream$) {
-        return inputStream$
-            .groupBy(([name]) => name)
-            .withLatestFrom(handlers$)
-            .filter(([x, handlers]) => typeof handlers[x.key] === "function")
-            .flatMap(([x, handlers]) => {
-                return handlers[x.key](x.pluck(1), inputs);
-            })
-            .share();
+        return inputStream$.pipe(
+            groupBy(([name]) => name),
+            withLatestFrom(handlers$),
+            filter(([x, handlers]) => typeof handlers[x.key] === "function"),
+            mergeMap(([x, handlers]) => {
+                return handlers[x.key](x.pipe(pluck(String(1))), inputs);
+            }),
+            share()
+        );
     };
 }
 

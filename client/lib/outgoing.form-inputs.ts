@@ -1,29 +1,31 @@
-import {
-    IncomingSocketNames,
-    OutgoingSocketEvent
-} from "./SocketNS";
+import { IncomingSocketNames, OutgoingSocketEvent } from "./SocketNS";
 import { getElementData } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
 import { createTimedBooleanSwitch } from "./utils";
-import * as KeyupEvent from './messages/KeyupEvent';
+import * as KeyupEvent from "./messages/KeyupEvent";
+import { filter } from "rxjs/operators/filter";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { map } from "rxjs/operators/map";
+import { share } from "rxjs/operators/share";
 
 export function getFormInputStream(
     document: Document,
     socket$
 ): Observable<OutgoingSocketEvent> {
     const canSync$ = createTimedBooleanSwitch(
-        socket$.filter(([name]) => name === IncomingSocketNames.Keyup)
+        socket$.pipe(filter(([name]) => name === IncomingSocketNames.Keyup))
     );
-    return inputObservable(document)
-        .withLatestFrom(canSync$)
-        .filter(([, canSync]) => canSync)
-        .map((incoming): OutgoingSocketEvent => {
+    return inputObservable(document).pipe(
+        withLatestFrom(canSync$),
+        filter(([, canSync]) => canSync),
+        map((incoming): OutgoingSocketEvent => {
             const keyupEvent: { target: HTMLInputElement } = incoming[0];
             const target = getElementData(keyupEvent.target);
             const value = keyupEvent.target.value;
 
             return KeyupEvent.outgoing(target, value);
-        });
+        })
+    );
 }
 
 function inputObservable(document: Document) {
@@ -39,5 +41,5 @@ function inputObservable(document: Document) {
             },
             true
         );
-    }).share();
+    }).pipe(share());
 }

@@ -70,8 +70,7 @@ interface IRule {
     match: IMatch;
 }
 
-interface IMatch {
-}
+interface IMatch {}
 
 interface IScriptPaths {
     path: string;
@@ -112,8 +111,7 @@ interface IWatchOptions {
     ignored: IIgnoredItem[];
 }
 
-interface IIgnoredItem {
-}
+interface IIgnoredItem {}
 
 interface IGhostMode {
     clicks: boolean;

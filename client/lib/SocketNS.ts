@@ -9,6 +9,13 @@ import { EffectEvent, EffectNames, reloadBrowserSafe } from "./Effects";
 import * as Log from "./Log";
 import * as BrowserNotify from "./messages/BrowserNotify";
 import * as BrowserLocation from "./messages/BrowserLocation";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { mergeMap } from "rxjs/operators/mergeMap";
+import { ignoreElements } from "rxjs/operators/ignoreElements";
+import { tap } from "rxjs/operators/tap";
+import { filter } from "rxjs/operators/filter";
+import { map } from "rxjs/operators/map";
+import { pluck } from "rxjs/operators/pluck";
 
 export enum IncomingSocketNames {
     Connection = "connection",
@@ -34,27 +41,28 @@ export type SocketEvent = [IncomingSocketNames, any];
 export type OutgoingSocketEvent = [OutgoingSocketEvents, any];
 
 export const socketHandlers$ = new BehaviorSubject({
-    [IncomingSocketNames.Connection]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(inputs.option$.pluck("logPrefix"))
-            .flatMap(([x, logPrefix], index) => {
+    [IncomingSocketNames.Connection]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(inputs.option$.pipe(pluck("logPrefix"))),
+            mergeMap(([x, logPrefix], index) => {
                 if (index === 0) {
                     return of(
                         [EffectNames.SetOptions, x],
                         Log.overlayInfo(`${logPrefix}: connected`)
                     );
                 }
-                return of(reloadBrowserSafe());
-            });
+                return reloadBrowserSafe();
+            })
+        );
     },
     [IncomingSocketNames.Disconnect]: (xs, inputs: Inputs) => {
-        return xs.do(x => console.log(x)).ignoreElements();
+        return xs.pipe(tap(x => console.log(x)), ignoreElements());
     },
-    [IncomingSocketNames.FileReload]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(inputs.option$)
-            .filter(([event, options]) => options.codeSync)
-            .flatMap(([event, options]): Observable<EffectEvent> => {
+    [IncomingSocketNames.FileReload]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(inputs.option$),
+            filter(([event, options]) => options.codeSync),
+            mergeMap(([event, options]): Observable<EffectEvent> => {
                 const data: FileReloadEventPayload = event;
                 if (data.url || !options.injectChanges) {
                     return reloadBrowserSafe();
@@ -63,77 +71,86 @@ export const socketHandlers$ = new BehaviorSubject({
                     return empty();
                 }
                 return of([EffectNames.FileReload, event]);
-            });
+            })
+        );
     },
-    [IncomingSocketNames.BrowserReload]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(inputs.option$)
-            .filter(([event, options]) => options.codeSync)
-            .flatMap(reloadBrowserSafe);
+    [IncomingSocketNames.BrowserReload]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(inputs.option$),
+            filter(([event, options]) => options.codeSync),
+            mergeMap(reloadBrowserSafe)
+        );
     },
-    [IncomingSocketNames.BrowserLocation]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(inputs.option$.pluck("ghostMode", "location"))
-            .filter(([, canSyncLocation]) => canSyncLocation)
-            .map(incoming => {
+    [IncomingSocketNames.BrowserLocation]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(inputs.option$.pipe(pluck("ghostMode", "location"))),
+            filter(([, canSyncLocation]) => canSyncLocation),
+            map(incoming => {
                 const event: BrowserLocation.IncomingPayload = incoming[0];
                 return [EffectNames.BrowserSetLocation, event];
-            });
+            })
+        );
     },
     [IncomingSocketNames.BrowserNotify]: xs => {
-        return xs.map((event: BrowserNotify.IncomingPayload) => {
-            return Log.overlayInfo(event.message, event.timeout);
-        });
+        return xs.pipe(
+            map((event: BrowserNotify.IncomingPayload) => {
+                return Log.overlayInfo(event.message, event.timeout);
+            })
+        );
     },
-    [IncomingSocketNames.Scroll]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(
-                inputs.option$.pluck("ghostMode", "scroll"),
-                inputs.window$.pluck("location", "pathname")
-            )
-            .filter(([event, canScroll, pathname]) => {
+    [IncomingSocketNames.Scroll]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(
+                inputs.option$.pipe(pluck("ghostMode", "scroll")),
+                inputs.window$.pipe(pluck("location", "pathname"))
+            ),
+            filter(([event, canScroll, pathname]) => {
                 return canScroll && event.pathname === pathname;
-            })
-            .map(([event]) => {
+            }),
+            map(([event]) => {
                 return [EffectNames.BrowserSetScroll, event];
-            });
+            })
+        );
     },
-    [IncomingSocketNames.Click]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(
-                inputs.option$.pluck("ghostMode", "clicks"),
-                inputs.window$.pluck("location", "pathname")
-            )
-            .filter(([event, canClick, pathname]) => {
+    [IncomingSocketNames.Click]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(
+                inputs.option$.pipe(pluck("ghostMode", "clicks")),
+                inputs.window$.pipe(pluck("location", "pathname"))
+            ),
+            filter(([event, canClick, pathname]) => {
                 return canClick && event.pathname === pathname;
-            })
-            .map(([event]) => {
+            }),
+            map(([event]) => {
                 return [EffectNames.SimulateClick, event];
-            });
-    },
-    [IncomingSocketNames.Keyup]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(
-                inputs.option$.pluck("ghostMode", "forms", "inputs"),
-                inputs.window$.pluck("location", "pathname")
-            )
-            .filter(([event, canKeyup, pathname]) => {
-                return canKeyup && event.pathname === pathname;
             })
-            .map(([event]) => {
-                return [EffectNames.SetElementValue, event];
-            });
+        );
     },
-    [IncomingSocketNames.Toggle]: (xs, inputs) => {
-        return xs
-            .withLatestFrom(
-                inputs.option$.pluck("ghostMode", "forms", "toggles"),
-                inputs.window$.pluck("location", "pathname")
-            )
-            .filter(([, canClick]) => canClick)
-            .map(([event]) => {
+    [IncomingSocketNames.Keyup]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(
+                inputs.option$.pipe(pluck("ghostMode", "forms", "inputs")),
+                inputs.window$.pipe(pluck("location", "pathname"))
+            ),
+            filter(([event, canKeyup, pathname]) => {
+                return canKeyup && event.pathname === pathname;
+            }),
+            map(([event]) => {
+                return [EffectNames.SetElementValue, event];
+            })
+        );
+    },
+    [IncomingSocketNames.Toggle]: (xs, inputs: Inputs) => {
+        return xs.pipe(
+            withLatestFrom(
+                inputs.option$.pipe(pluck("ghostMode", "forms", "toggles")),
+                inputs.window$.pipe(pluck("location", "pathname"))
+            ),
+            filter(([, canClick]) => canClick),
+            map(([event]) => {
                 return [EffectNames.SetElementToggleValue, event];
-            });
+            })
+        );
     },
     [OutgoingSocketEvents.Scroll]: (xs, inputs) => {
         return emitWithPathname(xs, inputs, IncomingSocketNames.Scroll);
@@ -150,11 +167,12 @@ export const socketHandlers$ = new BehaviorSubject({
 });
 
 function emitWithPathname(xs, inputs, name) {
-    return xs
-        .withLatestFrom(
+    return xs.pipe(
+        withLatestFrom(
             inputs.io$,
-            inputs.window$.pluck("location", "pathname")
-        )
-        .do(([event, io, pathname]) => io.emit(name, { ...event, pathname }))
-        .ignoreElements();
+            inputs.window$.pipe(pluck("location", "pathname"))
+        ),
+        tap(([event, io, pathname]) => io.emit(name, { ...event, pathname })),
+        ignoreElements()
+    );
 }

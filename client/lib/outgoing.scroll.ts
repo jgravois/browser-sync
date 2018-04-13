@@ -1,15 +1,15 @@
 import { createTimedBooleanSwitch } from "./utils";
-import {
-    IncomingSocketNames,
-    OutgoingSocketEvent,
-    OutgoingSocketEvents,
-} from "./SocketNS";
+import { IncomingSocketNames, OutgoingSocketEvent } from "./SocketNS";
 import {
     getScrollPosition,
     getScrollPositionForElement
 } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
-import * as ScrollEvent from './messages/ScrollEvent';
+import * as ScrollEvent from "./messages/ScrollEvent";
+import { filter } from "rxjs/operators/filter";
+import { map } from "rxjs/operators/map";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { share } from "rxjs/operators/share";
 
 export function getScrollStream(
     window: Window,
@@ -21,13 +21,13 @@ export function getScrollStream(
      * other streams
      */
     const canSync$ = createTimedBooleanSwitch(
-        socket$.filter(([name]) => name === IncomingSocketNames.Scroll)
+        socket$.pipe(filter(([name]) => name === IncomingSocketNames.Scroll))
     );
 
-    return scrollObservable(window, document)
-        .withLatestFrom(canSync$)
-        .filter(([, canSync]) => canSync)
-        .map((incoming): OutgoingSocketEvent => {
+    return scrollObservable(window, document).pipe(
+        withLatestFrom(canSync$),
+        filter(([, canSync]) => canSync),
+        map((incoming): OutgoingSocketEvent => {
             const scrollEvent: { target: HTMLElement } = incoming[0];
             const { target } = scrollEvent;
 
@@ -47,7 +47,8 @@ export function getScrollStream(
                 target.tagName,
                 index
             );
-        });
+        })
+    );
 }
 
 export function scrollObservable(
@@ -62,5 +63,5 @@ export function scrollObservable(
             },
             true
         );
-    }).share();
+    }).pipe(share());
 }

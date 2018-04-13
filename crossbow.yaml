@@ -58,5 +58,6 @@ tasks:
     examples/*
     test/specs/**/*
     test/specs/*.js
-    client/lib/**/*
+    client/lib/*
+    client/lib/messages/*
     --write --tab-width 4

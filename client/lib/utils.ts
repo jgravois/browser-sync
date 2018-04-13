@@ -1,6 +1,8 @@
 import { concat } from "rxjs/observable/concat";
 import { timer } from "rxjs/observable/timer";
 import { of } from "rxjs/observable/of";
+import { switchMap } from "rxjs/operators/switchMap";
+import { startWith } from "rxjs/operators/startWith";
 
 export function each(incoming) {
     return [].slice.call(incoming || []);
@@ -139,9 +141,10 @@ export function isBlacklisted(incoming) {
 }
 
 export function createTimedBooleanSwitch(source$, timeout = 1000) {
-    return source$
-        .switchMap(() => {
+    return source$.pipe(
+        switchMap(() => {
             return concat(of(false), timer(timeout).mapTo(true));
-        })
-        .startWith(true);
+        }),
+        startWith(true)
+    );
 }
