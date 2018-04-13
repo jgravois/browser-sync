@@ -4,14 +4,12 @@ import { reload } from "../vendor/Reloader";
 import { of } from "rxjs/observable/of";
 import { async } from "rxjs/scheduler/async";
 import { concat } from "rxjs/observable/concat";
-import {
-    ClickEvent,
-    FormToggleEvent,
-    KeyupEvent,
-    ScrollEvent
-} from "./SocketNS";
 import { getDocumentScrollSpace } from "./browser.utils";
 import { merge } from "rxjs/observable/merge";
+import * as ScrollEvent from './messages/ScrollEvent';
+import * as ClickEvent from './messages/ClickEvent';
+import * as KeyupEvent from './messages/KeyupEvent';
+import * as FormToggleEvent from './messages/FormToggleEvent';
 
 export enum EffectNames {
     FileReload = "@@FileReload",

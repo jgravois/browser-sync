@@ -1,11 +1,11 @@
 import { createTimedBooleanSwitch } from "./utils";
 import {
-    ClickEvent,
     IncomingSocketNames,
     OutgoingSocketEvent
 } from "./SocketNS";
 import { getElementData } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
+import * as ClickEvent from './messages/ClickEvent';
 
 export function getClickStream(
     document: Document,
@@ -26,6 +26,7 @@ export function getClickStream(
 
 function clickObservable(document: Document) {
     return Observable.create(obs => {
+        console.log('adding click handler');
         document.body.addEventListener(
             "click",
             function(e: any) {

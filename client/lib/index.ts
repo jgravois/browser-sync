@@ -33,6 +33,7 @@ const window$ = initWindow();
 const document$ = initDocument();
 const { socket$, io$ } = initSocket();
 const option$ = initOptions();
+console.log(option$.getValue());
 const navigator$ = initOptions();
 const notifyElement$ = initNotify(option$.getValue());
 const logInstance$ = initLogger(option$.getValue());

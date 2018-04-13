@@ -1,12 +1,12 @@
-import { getBrowserScrollPosition, setScroll } from "./browser.utils";
+import { getBrowserScrollPosition } from "./browser.utils";
 import { EffectNames } from "./Effects";
 import { Observable } from "rxjs/Observable";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { Inputs } from "./index";
 import { empty } from "rxjs/observable/empty";
 import { of } from "rxjs/observable/of";
-import { Log } from "./Log";
-import { BSDOM } from "./BSDOM";
+import * as Log from "./Log";
+import * as BSDOM from "./BSDOM";
 
 namespace ScrollRestore {
     export const PREFIX = "<<BS_START>>";

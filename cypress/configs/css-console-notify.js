@@ -3,7 +3,10 @@ module.exports = {
     open: false,
     watch: true,
     online: false,
-    logLevel: 'silent',
+    // logLevel: 'silent',
     minify: false,
-    injectNotification: 'console'
+    injectNotification: 'console',
+    ghostMode: {
+        clicks: false,
+    }
 };

@@ -1,7 +1,6 @@
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { timer } from "rxjs/observable/timer";
 import { Observable } from "rxjs/Observable";
-import ConsolePayload = Log.ConsolePayload;
 import { of } from "rxjs/observable/of";
 import { Nanologger } from "../vendor/logger";
 
@@ -22,21 +21,19 @@ export enum Overlay {
     Info = "@@Overlay.info"
 }
 
-export namespace Log {
-    export type ConsolePayload = [LogNames, any[]];
-    export function consoleInfo(...args): [LogNames.Log, ConsolePayload] {
-        return [LogNames.Log, [LogNames.Info, args]];
-    }
-    export function consoleDebug(...args): [LogNames.Log, ConsolePayload] {
-        return [LogNames.Log, [LogNames.Debug, args]];
-    }
-    export type OverlayInfoPayload = [string, number];
-    export function overlayInfo(
-        message: string,
-        timeout = 2000
-    ): [Overlay.Info, OverlayInfoPayload] {
-        return [Overlay.Info, [message, timeout]];
-    }
+export type ConsolePayload = [LogNames, any[]];
+export function consoleInfo(...args): [LogNames.Log, ConsolePayload] {
+    return [LogNames.Log, [LogNames.Info, args]];
+}
+export function consoleDebug(...args): [LogNames.Log, ConsolePayload] {
+    return [LogNames.Log, [LogNames.Debug, args]];
+}
+export type OverlayInfoPayload = [string, number];
+export function overlayInfo(
+    message: string,
+    timeout = 2000
+): [Overlay.Info, OverlayInfoPayload] {
+    return [Overlay.Info, [message, timeout]];
 }
 
 export const logHandler$ = new BehaviorSubject({

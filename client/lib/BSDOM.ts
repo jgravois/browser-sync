@@ -1,53 +1,51 @@
 import { Observable } from "rxjs/Rx";
 import { Inputs } from "./index";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { Log } from "./Log";
+import * as Log from "./Log";
 
-export namespace BSDOM {
-    export enum Events {
-        PropSet = "@@BSDOM.Events.PropSet",
-        StyleSet = "@@BSDOM.Events.StyleSet",
-        LinkReplace = "@@BSDOM.Events.LinkReplace",
-        SetScroll = "@@BSDOM.Events.SetScroll",
-        SetWindowName = "@@BSDOM.Events.SetWindowName"
-    }
+export enum Events {
+    PropSet = "@@BSDOM.Events.PropSet",
+    StyleSet = "@@BSDOM.Events.StyleSet",
+    LinkReplace = "@@BSDOM.Events.LinkReplace",
+    SetScroll = "@@BSDOM.Events.SetScroll",
+    SetWindowName = "@@BSDOM.Events.SetWindowName"
+}
 
-    export function propSet(incoming): [Events.PropSet, any] {
-        return [Events.PropSet, incoming];
-    }
+export function propSet(incoming): [Events.PropSet, any] {
+    return [Events.PropSet, incoming];
+}
 
-    export function styleSet(incoming): [Events.StyleSet, any] {
-        return [Events.StyleSet, incoming];
-    }
+export function styleSet(incoming): [Events.StyleSet, any] {
+    return [Events.StyleSet, incoming];
+}
 
-    export function setWindowName(
-        incoming: string
-    ): [Events.SetWindowName, string] {
-        return [Events.SetWindowName, incoming];
-    }
+export function setWindowName(
+    incoming: string
+): [Events.SetWindowName, string] {
+    return [Events.SetWindowName, incoming];
+}
 
-    export type SetScrollPayload = { x: number; y: number };
-    export function setScroll(x, y): [Events.SetScroll, SetScrollPayload] {
-        return [Events.SetScroll, { x, y }];
-    }
+export type SetScrollPayload = { x: number; y: number };
+export function setScroll(x, y): [Events.SetScroll, SetScrollPayload] {
+    return [Events.SetScroll, { x, y }];
+}
 
-    export type LinkReplacePayload = {
-        target: HTMLLinkElement;
-        nextHref: string;
-        prevHref: string;
-        pathname: string;
-        basename: string;
-    };
+export type LinkReplacePayload = {
+    target: HTMLLinkElement;
+    nextHref: string;
+    prevHref: string;
+    pathname: string;
+    basename: string;
+};
 
-    export function linkReplace(
-        incoming: LinkReplacePayload
-    ): [Events.LinkReplace, LinkReplacePayload] {
-        return [Events.LinkReplace, incoming];
-    }
+export function linkReplace(
+    incoming: LinkReplacePayload
+): [Events.LinkReplace, LinkReplacePayload] {
+    return [Events.LinkReplace, incoming];
 }
 
 export const domHandlers$ = new BehaviorSubject({
-    [BSDOM.Events.PropSet](xs) {
+    [Events.PropSet](xs) {
         return xs
             .do(event => {
                 const { target, prop, value } = event;
@@ -61,7 +59,7 @@ export const domHandlers$ = new BehaviorSubject({
                 )
             );
     },
-    [BSDOM.Events.StyleSet](xs) {
+    [Events.StyleSet](xs) {
         return xs
             .do(event => {
                 const { style, styleName, newValue, pathName } = event;
@@ -71,12 +69,12 @@ export const domHandlers$ = new BehaviorSubject({
                 Log.consoleDebug(`[StyleSet] ${e.styleName} = ${e.pathName}`)
             );
     },
-    [BSDOM.Events.LinkReplace](
-        xs: Observable<BSDOM.LinkReplacePayload>,
+    [Events.LinkReplace](
+        xs: Observable<LinkReplacePayload>,
         inputs: Inputs
     ) {
         return xs
-            .withLatestFrom<BSDOM.LinkReplacePayload, any>(
+            .withLatestFrom<LinkReplacePayload, any>(
                 inputs.option$.pluck("injectNotification")
             )
             .filter(([, inject]) => inject)
@@ -88,13 +86,13 @@ export const domHandlers$ = new BehaviorSubject({
                 return Log.consoleInfo(message);
             });
     },
-    [BSDOM.Events.SetScroll]: (xs, inputs: Inputs) => {
+    [Events.SetScroll]: (xs, inputs: Inputs) => {
         return xs
             .withLatestFrom(inputs.window$)
             .do(([event, window]) => window.scrollTo(event.x, event.y))
             .ignoreElements();
     },
-    [BSDOM.Events.SetWindowName]: (xs, inputs: Inputs) => {
+    [Events.SetWindowName]: (xs, inputs: Inputs) => {
         return xs
             .withLatestFrom(inputs.window$)
             .do(([value, window]) => (window.name = value))

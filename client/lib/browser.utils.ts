@@ -1,7 +1,7 @@
 /**
  * @returns {window}
  */
-import { ScrollEvent } from "./SocketNS";
+import * as ScrollEvent from "./messages/ScrollEvent";
 import ICoords = ScrollEvent.ICoords;
 
 export function getWindow() {
@@ -20,10 +20,10 @@ export function getDocument() {
  * @returns {{x: *, y: *}}
  */
 export function getBrowserScrollPosition(window, document): ICoords {
-    var scrollX;
-    var scrollY;
-    var dElement = document.documentElement;
-    var dBody = document.body;
+    let scrollX;
+    let scrollY;
+    const dElement = document.documentElement;
+    const dBody = document.body;
 
     if (window.pageYOffset !== undefined) {
         scrollX = window.pageXOffset;

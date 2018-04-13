@@ -3,13 +3,13 @@ import {
     IncomingSocketNames,
     OutgoingSocketEvent,
     OutgoingSocketEvents,
-    ScrollEvent
 } from "./SocketNS";
 import {
     getScrollPosition,
     getScrollPositionForElement
 } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
+import * as ScrollEvent from './messages/ScrollEvent';
 
 export function getScrollStream(
     window: Window,

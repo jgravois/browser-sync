@@ -1,9 +1,10 @@
 import { getByPath, isUndefined } from "./browser.utils";
+import {InitOptions} from "./types";
 
 interface BrowserSyncInit {
     socket: any;
     emitter: any;
-    options: bs.InitOptions;
+    options: InitOptions;
 }
 
 /**
@@ -12,7 +13,7 @@ interface BrowserSyncInit {
 export class BrowserSync {
     public socket: any;
     public emitter: any;
-    public options: bs.InitOptions;
+    public options: InitOptions;
     public tabHidden: boolean = false;
 
     constructor(public init: BrowserSyncInit) {
@@ -23,7 +24,7 @@ export class BrowserSync {
         /**
          * Options set
          */
-        this.socket.on("options:set", (data: { options: bs.InitOptions }) => {
+        this.socket.on("options:set", (data: { options: InitOptions }) => {
             this.emitter.emit("notify", "Setting options...");
             this.options = data.options;
         });

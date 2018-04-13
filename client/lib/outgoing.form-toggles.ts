@@ -1,12 +1,11 @@
 import {
-    FormToggleEvent,
     IncomingSocketNames,
     OutgoingSocketEvent,
-    OutgoingSocketEvents
 } from "./SocketNS";
 import { getElementData } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
 import { createTimedBooleanSwitch } from "./utils";
+import * as FormToggleEvent from './messages/FormToggleEvent';
 
 export function getFormTogglesStream(
     document: Document,

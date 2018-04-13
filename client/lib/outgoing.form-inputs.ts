@@ -1,11 +1,11 @@
 import {
     IncomingSocketNames,
-    KeyupEvent,
     OutgoingSocketEvent
 } from "./SocketNS";
 import { getElementData } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
 import { createTimedBooleanSwitch } from "./utils";
+import * as KeyupEvent from './messages/KeyupEvent';
 
 export function getFormInputStream(
     document: Document,

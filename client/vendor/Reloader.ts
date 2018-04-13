@@ -9,7 +9,7 @@ import {empty} from "rxjs/observable/empty";
 import {Observable} from "rxjs/Observable";
 import {merge} from "rxjs/observable/merge";
 import {from} from "rxjs/observable/from";
-import {BSDOM} from "../lib/BSDOM";
+import * as BSDOM from "../lib/BSDOM";
 
 var hiddenElem;
 
