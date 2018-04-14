@@ -15,32 +15,32 @@ tasks:
     - build-all
     - cypress
 
-  cypress:
-    - >
+  (cypress):
+    css-injection: >
       @npm node cypress/setup/run.js
       '../configs/css-injection.js'
       cypress/integration/css-injection.js
-    - >
+    img-injection: >
       @npm node cypress/setup/run.js
       '../configs/css-injection.js'
       cypress/integration/img-injection.js
-    - >
+    no-notify: >
       @npm node cypress/setup/run.js
       '../configs/no-notify.js'
       cypress/integration/no-notify.js
-    - >
+    css-overlay: >
       @npm node cypress/setup/run.js
       '../configs/css-overlay-notify.js'
       cypress/integration/css-overlay-notify.js
-    - >
+    css-console-notify: >
       @npm node cypress/setup/run.js
       '../configs/css-console-notify.js'
       cypress/integration/css-console-notify.js
-    - >
+    connection-notify: >
       @npm node cypress/setup/run.js
       '../configs/css-injection.js'
       cypress/integration/connection-notify.js
-    - >
+    log-prefix: >
       @npm node cypress/setup/run.js
       '../configs/logPrefix.js'
       cypress/integration/logPrefix.js
