@@ -48,7 +48,7 @@ export function setWindowName(
 }
 
 export type SetScrollPayload = { x: number; y: number };
-export function setScroll(x, y): [Events.SetScroll, SetScrollPayload] {
+export function setScroll(x:number, y:number): [Events.SetScroll, SetScrollPayload] {
     return [Events.SetScroll, { x, y }];
 }
 
@@ -108,14 +108,14 @@ export const domHandlers$ = new BehaviorSubject({
             })
         );
     },
-    [Events.SetScroll]: (xs, inputs: Inputs) => {
+    [Events.SetScroll]: (xs: Observable<SetScrollPayload>, inputs: Inputs) => {
         return xs.pipe(
             withLatestFrom(inputs.window$),
             tap(([event, window]) => window.scrollTo(event.x, event.y)),
             ignoreElements()
         );
     },
-    [Events.SetWindowName]: (xs, inputs: Inputs) => {
+    [Events.SetWindowName]: (xs: Observable<string>, inputs: Inputs) => {
         return xs.pipe(
             withLatestFrom(inputs.window$),
             tap(([value, window]) => (window.name = value)),
