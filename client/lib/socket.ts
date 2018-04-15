@@ -37,6 +37,7 @@ export function initDocument() {
 export function initNavigator() {
     return of(navigator);
 }
+
 export function initOptions() {
     return new BehaviorSubject(window.___browserSync___.options);
 }

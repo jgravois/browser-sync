@@ -8,7 +8,7 @@ import { domHandlers$ } from "./BSDOM";
 import { SocketEvent, socketHandlers$ } from "./SocketNS";
 import { merge } from "rxjs/observable/merge";
 import { initLogger, logHandler$ } from "./Log";
-import { outputHandlers$ } from "./Effects";
+import { effectOutputHandlers$ } from "./Effects";
 import { Nanologger } from "../vendor/logger";
 import { scrollRestoreHandlers$ } from "./ScrollRestore";
 import { initOutgoing } from "./outgoing";
@@ -55,9 +55,14 @@ const inputs: Inputs = {
 function getStream(name: string, inputs) {
     return function(handlers$, inputStream$) {
         return inputStream$.pipe(
-            groupBy(([name]) => name),
+            groupBy(([name]) => {
+                return name;
+            }),
             withLatestFrom(handlers$),
-            filter(([x, handlers]) => typeof handlers[x.key] === "function"),
+            filter(([x, handlers]) => {
+                // console.log(x.key, typeof handlers[x.key] === "function");
+                return typeof handlers[x.key] === "function";
+            }),
             mergeMap(([x, handlers]) => {
                 return handlers[x.key](x.pipe(pluck(String(1))), inputs);
             }),
@@ -67,9 +72,10 @@ function getStream(name: string, inputs) {
 }
 
 const combinedEffectHandler$ = zip(
-    outputHandlers$,
+    effectOutputHandlers$,
     scrollRestoreHandlers$,
     (...args) => {
+        console.log(args);
         return args.reduce((acc, item) => ({ ...acc, ...item }), {});
     }
 );

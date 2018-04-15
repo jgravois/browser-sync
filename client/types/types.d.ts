@@ -34,7 +34,7 @@ interface IBrowserSyncOptions {
     injectNotification: boolean | ('console' | 'overlay');
     cors: boolean;
     proxy: boolean;
-    tagNames: ITagNames;
+    tagNames: {[index: string]: string};
     scrollRestoreTechnique: string;
     watch: boolean;
     watchOptions: IWatchOptions;
@@ -88,23 +88,10 @@ interface IUrls {
     local: string;
     external: string;
 }
-interface ITagNames {
-    jpg: string;
-    css: string;
-    svg: string;
-    gif: string;
-    jpeg: string;
-    js: string;
-    png: string;
-    scss: string;
-    less: string;
-}
 interface IWatchOptions {
     ignoreInitial: boolean;
     cwd: string;
     ignored: any[];
-}
-interface IIgnoredItem {
 }
 interface IGhostMode {
     clicks: boolean;

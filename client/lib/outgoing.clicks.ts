@@ -31,6 +31,12 @@ function clickObservable(document: Document) {
         document.body.addEventListener(
             "click",
             function(e: any) {
+                if (e.target.tagName === "LABEL") {
+                    const id = e.target.getAttribute("for");
+                    if (id && document.getElementById(id)) {
+                        return false;
+                    }
+                }
                 obs.next({ target: e.target });
             },
             true

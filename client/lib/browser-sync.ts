@@ -36,6 +36,7 @@ export class BrowserSync {
             this.tabHidden = false;
         });
     }
+
     /**
      * Helper to check if syncing is allowed
      * @param data
@@ -64,6 +65,7 @@ export function canSync(
 
     return canSync && data.url === location.pathname;
 }
+
 /**
  * Helper to check if syncing is allowed
  * @returns {boolean}

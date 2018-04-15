@@ -28,7 +28,7 @@ export interface InitOptions {
     injectFileTypes: string[];
     cors: boolean;
     proxy: boolean;
-    tagNames: ITagNames;
+    tagNames: { [index: string]: string };
     scrollRestoreTechnique: string;
     watch: boolean;
     watchOptions: IWatchOptions;
@@ -91,18 +91,6 @@ interface IUrls {
     external: string;
     ui: string;
     "ui-external": string;
-}
-
-interface ITagNames {
-    jpg: string;
-    css: string;
-    svg: string;
-    gif: string;
-    jpeg: string;
-    js: string;
-    png: string;
-    scss: string;
-    less: string;
 }
 
 interface IWatchOptions {

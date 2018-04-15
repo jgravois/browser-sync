@@ -48,7 +48,11 @@ export function setWindowName(
 }
 
 export type SetScrollPayload = { x: number; y: number };
-export function setScroll(x:number, y:number): [Events.SetScroll, SetScrollPayload] {
+
+export function setScroll(
+    x: number,
+    y: number
+): [Events.SetScroll, SetScrollPayload] {
     return [Events.SetScroll, { x, y }];
 }
 

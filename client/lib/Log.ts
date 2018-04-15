@@ -28,13 +28,17 @@ export enum Overlay {
 }
 
 export type ConsolePayload = [LogNames, any[]];
+
 export function consoleInfo(...args): [LogNames.Log, ConsolePayload] {
     return [LogNames.Log, [LogNames.Info, args]];
 }
+
 export function consoleDebug(...args): [LogNames.Log, ConsolePayload] {
     return [LogNames.Log, [LogNames.Debug, args]];
 }
+
 export type OverlayInfoPayload = [string, number];
+
 export function overlayInfo(
     message: string,
     timeout = 2000
