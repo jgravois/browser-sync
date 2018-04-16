@@ -1,10 +1,10 @@
-import {FileReloadEventPayload} from "../../types/socket";
-import {EffectNames} from "../Effects";
-import {Inputs} from "../index";
-import {reload} from "../../vendor/Reloader";
-import {withLatestFrom} from "rxjs/operators/withLatestFrom";
-import {mergeMap} from "rxjs/operators/mergeMap";
-import {Observable} from "rxjs/Observable";
+import { FileReloadEventPayload } from "../../types/socket";
+import { EffectNames } from "../Effects";
+import { Inputs } from "../index";
+import { reload } from "../../vendor/Reloader";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { mergeMap } from "rxjs/operators/mergeMap";
+import { Observable } from "rxjs/Observable";
 
 export function fileReload(event: FileReloadEventPayload) {
     return [EffectNames.FileReload, event];
@@ -15,15 +15,18 @@ export function fileReload(event: FileReloadEventPayload) {
  * @param xs
  * @param inputs
  */
-export function fileReloadEffect(xs: Observable<FileReloadEventPayload>, inputs: Inputs) {
+export function fileReloadEffect(
+    xs: Observable<FileReloadEventPayload>,
+    inputs: Inputs
+) {
     return xs.pipe(
-        withLatestFrom(inputs.option$, inputs.document$, inputs.navigator$)
-        , mergeMap(([event, options, document, navigator]) => {
+        withLatestFrom(inputs.option$, inputs.document$, inputs.navigator$),
+        mergeMap(([event, options, document, navigator]) => {
             return reload(document, navigator)(event, {
                 tagNames: options.tagNames,
                 liveCSS: true,
                 liveImg: true
             });
         })
-    )
+    );
 }

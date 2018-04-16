@@ -60,4 +60,5 @@ tasks:
     test/specs/*.js
     client/lib/*
     client/lib/messages/*
+    client/lib/effects/*
     --write --tab-width 4
