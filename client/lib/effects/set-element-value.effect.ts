@@ -3,7 +3,7 @@ import { Observable } from "rxjs/Observable";
 import * as KeyupEvent from "../messages/KeyupEvent";
 import { tap } from "rxjs/operators/tap";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 
 export function setElementValueEffect(
     xs: Observable<KeyupEvent.IncomingPayload>,

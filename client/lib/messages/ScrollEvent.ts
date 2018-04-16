@@ -1,11 +1,11 @@
-import { OutgoingSocketEvents } from "../SocketNS";
+import { OutgoingSocketEvents } from "../socket-messages";
 import { Inputs } from "../index";
 import { pluck } from "rxjs/operators/pluck";
 import { filter } from "rxjs/operators/filter";
 import { map } from "rxjs/operators/map";
 import { Observable } from "rxjs/Rx";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 
 export interface ICoords {
     x: number;

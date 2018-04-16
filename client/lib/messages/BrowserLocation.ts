@@ -4,7 +4,7 @@ import { filter } from "rxjs/operators/filter";
 import { map } from "rxjs/operators/map";
 import { Observable } from "rxjs/Rx";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { browserSetLocation } from "../effects/BrowserSetLocation.effect";
+import { browserSetLocation } from "../effects/browser-set-location.effect";
 
 export interface IncomingPayload {
     url?: string;

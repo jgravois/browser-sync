@@ -1,5 +1,5 @@
 import { createTimedBooleanSwitch } from "./utils";
-import { IncomingSocketNames, OutgoingSocketEvent } from "./SocketNS";
+import { IncomingSocketNames, OutgoingSocketEvent } from "./socket-messages";
 import {
     getScrollPosition,
     getScrollPositionForElement

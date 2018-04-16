@@ -9,13 +9,15 @@ import {empty} from "rxjs/observable/empty";
 import {Observable} from "rxjs/Observable";
 import {merge} from "rxjs/observable/merge";
 import {from} from "rxjs/observable/from";
-import * as BSDOM from "../lib/BSDOM";
 import {filter} from "rxjs/operators/filter";
 import {map} from "rxjs/operators/map";
 import {mergeMap} from "rxjs/operators/mergeMap";
 import {take} from "rxjs/operators/take";
 import {tap} from "rxjs/operators/tap";
 import {mapTo} from "rxjs/operators/mapTo";
+import {propSet} from "../lib/dom-effects/prop-set.dom-effect";
+import {styleSet} from "../lib/dom-effects/style-set.dom-effect";
+import {linkReplace} from "../lib/dom-effects/link-replace.dom-effect";
 
 var hiddenElem;
 
@@ -121,7 +123,7 @@ export function reload(document: Document, navigator: Navigator) {
                             value: generateCacheBustUrl(img.src, expando),
                             pathname: getLocation(img.src).pathname
                         };
-                        return BSDOM.propSet(payload);
+                        return propSet(payload);
                     })
                 ),
             from(IMAGE_STYLES)
@@ -197,7 +199,7 @@ export function reload(document: Document, navigator: Navigator) {
                 ];
             })
             , filter(([style, styleName, value, newValue]) => newValue !== value)
-            , map(([style, styleName, value, newValue, pathName]) => BSDOM.styleSet({style, styleName, value, newValue, pathName}))
+            , map(([style, styleName, value, newValue, pathName]) => styleSet({style, styleName, value, newValue, pathName}))
         )
     }
 
@@ -303,7 +305,7 @@ export function reload(document: Document, navigator: Navigator) {
                                 link.parentNode.removeChild(link);
                                 clone.onreadystatechange = null;
                             })
-                            , mapTo(BSDOM.linkReplace({target: clone, nextHref, prevHref, pathname, basename}))
+                            , mapTo(linkReplace({target: clone, nextHref, prevHref, pathname, basename}))
                         )
                 })
             )

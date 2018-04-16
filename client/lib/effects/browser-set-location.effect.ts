@@ -4,7 +4,7 @@ import { tap } from "rxjs/operators/tap";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { Observable } from "rxjs/Observable";
 import { IncomingPayload } from "../messages/BrowserLocation";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 
 export function browserSetLocationEffect(
     xs: Observable<IncomingPayload>,

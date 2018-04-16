@@ -43,8 +43,6 @@ export function initOptions() {
 }
 
 export function initSocket() {
-    // return Observable
-
     /**
      * @type {{emit: emit, on: on}}
      */

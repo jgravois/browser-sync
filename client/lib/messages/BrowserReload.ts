@@ -8,7 +8,7 @@ import { of } from "rxjs/observable/of";
 import {
     browserReload,
     preBrowserReload
-} from "../effects/BrowserReload.effect";
+} from "../effects/browser-reload.effect";
 import { subscribeOn } from "rxjs/operators/subscribeOn";
 import { async } from "rxjs/scheduler/async";
 

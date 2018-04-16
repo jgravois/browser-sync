@@ -7,7 +7,7 @@ import { of } from "rxjs/observable/of";
 import { Observable } from "rxjs/Rx";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { mergeMap } from "rxjs/operators/mergeMap";
-import { fileReload } from "../effects/FileReload.effect";
+import { fileReload } from "../effects/file-reload.effect";
 import { reloadBrowserSafe } from "./BrowserReload";
 
 export function incomingFileReload(

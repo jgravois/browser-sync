@@ -3,7 +3,7 @@ import { getFormInputStream } from "./outgoing.form-inputs";
 import { getClickStream } from "./outgoing.clicks";
 import { getScrollStream } from "./outgoing.scroll";
 import { getFormTogglesStream } from "./outgoing.form-toggles";
-import { OutgoingSocketEvent } from "./SocketNS";
+import { OutgoingSocketEvent } from "./socket-messages";
 import { Observable } from "rxjs/Observable";
 
 export function initOutgoing(

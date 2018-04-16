@@ -2,10 +2,10 @@ import { Inputs } from "../index";
 import { pluck } from "rxjs/operators/pluck";
 import { of } from "rxjs/observable/of";
 import { Observable } from "rxjs/Rx";
-import * as Log from "../Log";
+import * as Log from "../log";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { mergeMap } from "rxjs/operators/mergeMap";
-import { setOptions } from "../effects/SetOptions.effect";
+import { setOptions } from "../effects/set-options.effect";
 import { reloadBrowserSafe } from "./BrowserReload";
 
 export function incomingConnection(

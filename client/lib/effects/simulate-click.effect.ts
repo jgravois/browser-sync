@@ -4,7 +4,7 @@ import { ignoreElements } from "rxjs/operators/ignoreElements";
 import * as ClickEvent from "../messages/ClickEvent";
 import { tap } from "rxjs/operators/tap";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 import { IncomingPayload } from "../messages/ClickEvent";
 
 export function simulateClickEffect(

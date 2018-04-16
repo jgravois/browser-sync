@@ -1,14 +1,12 @@
-import { OutgoingSocketEvents } from "../SocketNS";
+import { OutgoingSocketEvents } from "../socket-messages";
 import * as ClickEvent from "./ClickEvent";
-import { ElementData } from "./ClickEvent";
 import { Inputs } from "../index";
 import { pluck } from "rxjs/operators/pluck";
 import { filter } from "rxjs/operators/filter";
 import { map } from "rxjs/operators/map";
 import { Observable } from "rxjs/Rx";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { EffectNames } from "../Effects";
-import { setElementValue } from "../effects/SetElementValue.effect";
+import { setElementValue } from "../effects/set-element-value.effect";
 
 export interface Payload {
     value: any;

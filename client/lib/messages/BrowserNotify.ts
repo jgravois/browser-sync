@@ -1,6 +1,6 @@
 import { map } from "rxjs/operators/map";
 import { Observable } from "rxjs/Rx";
-import * as Log from "../Log";
+import * as Log from "../log";
 
 export interface IncomingPayload {
     message: string;

@@ -1,5 +1,5 @@
 import { FileReloadEventPayload } from "../../types/socket";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 import { Inputs } from "../index";
 import { reload } from "../../vendor/Reloader";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";

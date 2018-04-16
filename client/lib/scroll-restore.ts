@@ -1,16 +1,17 @@
 import { getBrowserScrollPosition } from "./browser.utils";
-import { EffectNames } from "./Effects";
+import { EffectNames } from "./effects";
 import { Observable } from "rxjs/Observable";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { Inputs } from "./index";
 import { empty } from "rxjs/observable/empty";
 import { of } from "rxjs/observable/of";
-import * as Log from "./Log";
-import * as BSDOM from "./BSDOM";
+import * as Log from "./log";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { take } from "rxjs/operators/take";
 import { mergeMap } from "rxjs/operators/mergeMap";
 import { map } from "rxjs/operators/map";
+import { setWindowName } from "./dom-effects/set-window-name.dom-effect";
+import { setScroll } from "./dom-effects/set-scroll.dom-effect";
 
 export const PREFIX = "<<BS_START>>";
 export const SUFFIX = "<<BS_START>>";
@@ -46,7 +47,7 @@ export function initWindowName(window: Window) {
     if (saved && saved.bs && saved.bs.hardReload && saved.bs.scroll) {
         const { x, y } = saved.bs.scroll;
         return of<any>(
-            BSDOM.setScroll(x, y),
+            setScroll(x, y),
             Log.consoleDebug(`[ScrollRestore] x = ${x} y = ${y}`)
         );
     }
@@ -88,7 +89,7 @@ export const scrollRestoreHandlers$ = new BehaviorSubject({
                     SUFFIX
                 ].join("");
             }),
-            map(value => BSDOM.setWindowName(value))
+            map(value => setWindowName(value))
         );
     }
 });

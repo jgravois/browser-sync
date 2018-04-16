@@ -1,5 +1,5 @@
 import { createTimedBooleanSwitch } from "./utils";
-import { IncomingSocketNames, OutgoingSocketEvent } from "./SocketNS";
+import { IncomingSocketNames, OutgoingSocketEvent } from "./socket-messages";
 import { getElementData } from "./browser.utils";
 import { Observable } from "rxjs/Observable";
 import * as ClickEvent from "./messages/ClickEvent";

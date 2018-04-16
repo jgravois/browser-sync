@@ -3,7 +3,7 @@ import { Observable } from "rxjs/Observable";
 import * as FormToggleEvent from "../messages/FormToggleEvent";
 import { tap } from "rxjs/operators/tap";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 
 export function setElementToggleValueEffect(
     xs: Observable<FormToggleEvent.IncomingPayload>,

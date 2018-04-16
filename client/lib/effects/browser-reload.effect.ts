@@ -1,4 +1,4 @@
-import { EffectNames } from "../Effects";
+import { EffectNames } from "../effects";
 import { Inputs } from "../index";
 import { Observable } from "rxjs/Observable";
 import { tap } from "rxjs/operators/tap";
