@@ -38,7 +38,7 @@ const option$ = initOptions();
 const navigator$ = initOptions();
 const notifyElement$ = initNotify(option$.getValue());
 const logInstance$ = initLogger(option$.getValue());
-const outgoing$ = initOutgoing(window, document, socket$);
+const outgoing$ = initOutgoing(window, document, socket$, option$);
 
 const inputs: Inputs = {
     window$,
