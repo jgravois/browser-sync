@@ -16,7 +16,7 @@ export function initListeners(
     const merged$ = merge(
         getScrollStream(window, document, socket$, option$),
         getClickStream(document, socket$, option$),
-        getFormInputStream(document, socket$),
+        getFormInputStream(document, socket$, option$),
         getFormTogglesStream(document, socket$)
     );
 
