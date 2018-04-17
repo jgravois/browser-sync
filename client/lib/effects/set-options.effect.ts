@@ -2,7 +2,9 @@ import { Inputs } from "../index";
 import { Observable } from "rxjs/Observable";
 import { ignoreElements } from "rxjs/operators/ignoreElements";
 import { tap } from "rxjs/operators/tap";
+import { map } from "rxjs/operators/map";
 import { EffectNames } from "../effects";
+import {consoleInfo} from "../log";
 
 /**
  * Set the local client options
@@ -15,6 +17,7 @@ export function setOptionsEffect(
 ) {
     return xs.pipe(
         tap(options => inputs.option$.next(options)),
+        // map(() => consoleInfo('set options'))
         ignoreElements()
     );
 }

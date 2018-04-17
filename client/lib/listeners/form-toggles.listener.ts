@@ -1,8 +1,8 @@
-import { IncomingSocketNames, OutgoingSocketEvent } from "./socket-messages";
-import { getElementData } from "./browser.utils";
+import { IncomingSocketNames, OutgoingSocketEvent } from "../socket-messages";
+import { getElementData } from "../browser.utils";
 import { Observable } from "rxjs/Observable";
-import { createTimedBooleanSwitch } from "./utils";
-import * as FormToggleEvent from "./messages/FormToggleEvent";
+import { createTimedBooleanSwitch } from "../utils";
+import * as FormToggleEvent from "../messages/FormToggleEvent";
 import { filter } from "rxjs/operators/filter";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { map } from "rxjs/operators/map";

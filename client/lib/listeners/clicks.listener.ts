@@ -1,13 +1,13 @@
-import { createTimedBooleanSwitch } from "./utils";
-import { IncomingSocketNames, OutgoingSocketEvent } from "./socket-messages";
-import { getElementData } from "./browser.utils";
+import { createTimedBooleanSwitch } from "../utils";
+import { IncomingSocketNames, OutgoingSocketEvent } from "../socket-messages";
+import { getElementData } from "../browser.utils";
 import { Observable } from "rxjs/Observable";
-import * as ClickEvent from "./messages/ClickEvent";
+import * as ClickEvent from "../messages/ClickEvent";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { filter } from "rxjs/operators/filter";
 import { map } from "rxjs/operators/map";
 import { share } from "rxjs/operators/share";
-import {Inputs} from "./index";
+import {Inputs} from "../index";
 import {mergeMap} from "rxjs/operators/mergeMap";
 import {pluck} from "rxjs/operators/pluck";
 
@@ -32,7 +32,7 @@ export function getClickStream(
                 })
             );
         })
-
+    )
 }
 
 function clickObservable(document: Document) {

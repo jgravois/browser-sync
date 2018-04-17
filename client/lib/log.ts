@@ -47,7 +47,7 @@ export function overlayInfo(
 }
 
 export const logHandler$ = new BehaviorSubject({
-    [LogNames.Log]: (xs, inputs: Inputs) => {
+    [LogNames.Log]: (xs: Observable<[LogNames, any]>, inputs: Inputs) => {
         return xs.pipe(
             /**
              * access injectNotification from the options stream
@@ -62,9 +62,7 @@ export const logHandler$ = new BehaviorSubject({
             filter(
                 ([, , injectNotification]) => injectNotification === "console"
             ),
-            tap(incoming => {
-                const event: ConsolePayload = incoming[0];
-                const log: Nanologger = incoming[1];
+            tap(([event, log]) => {
                 switch (event[0]) {
                     case LogNames.Info: {
                         return log.info.apply(log, event[1]);
@@ -76,7 +74,7 @@ export const logHandler$ = new BehaviorSubject({
             })
         );
     },
-    [Overlay.Info]: (xs: Observable<any>, inputs: Inputs) => {
+    [Overlay.Info]: (xs: Observable<[LogNames, any]>, inputs: Inputs) => {
         return xs.pipe(
             withLatestFrom(
                 inputs.option$,

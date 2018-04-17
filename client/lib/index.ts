@@ -11,13 +11,14 @@ import { initLogger, logHandler$ } from "./log";
 import { effectOutputHandlers$ } from "./effects";
 import { Nanologger } from "../vendor/logger";
 import { scrollRestoreHandlers$ } from "./scroll-restore";
-import { initOutgoing } from "./outgoing";
+import { initListeners } from "./listeners";
 import { groupBy } from "rxjs/operators/groupBy";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { mergeMap } from "rxjs/operators/mergeMap";
 import { share } from "rxjs/operators/share";
 import { filter } from "rxjs/operators/filter";
 import { pluck } from "rxjs/operators/pluck";
+import {tap} from "rxjs/operators/tap";
 
 export interface Inputs {
     window$: Observable<Window>;
@@ -38,7 +39,7 @@ const option$ = initOptions();
 const navigator$ = initOptions();
 const notifyElement$ = initNotify(option$.getValue());
 const logInstance$ = initLogger(option$.getValue());
-const outgoing$ = initOutgoing(window, document, socket$, option$);
+const outgoing$ = initListeners(window, document, socket$, option$);
 
 const inputs: Inputs = {
     window$,
@@ -55,12 +56,12 @@ const inputs: Inputs = {
 function getStream(name: string, inputs) {
     return function(handlers$, inputStream$) {
         return inputStream$.pipe(
-            groupBy(([name]) => {
-                return name;
+            groupBy(([keyName]) => {
+                console.log(name, keyName);
+                return keyName;
             }),
             withLatestFrom(handlers$),
             filter(([x, handlers]) => {
-                // console.log(x.key, typeof handlers[x.key] === "function");
                 return typeof handlers[x.key] === "function";
             }),
             mergeMap(([x, handlers]) => {
@@ -75,7 +76,6 @@ const combinedEffectHandler$ = zip(
     effectOutputHandlers$,
     scrollRestoreHandlers$,
     (...args) => {
-        console.log(args);
         return args.reduce((acc, item) => ({ ...acc, ...item }), {});
     }
 );

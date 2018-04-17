@@ -13,6 +13,7 @@ import { incomingFileReload } from "./messages/FileReload";
 import { incomingConnection } from "./messages/Connection";
 import { incomingDisconnect } from "./messages/Disconnect";
 import { incomingInputsToggles } from "./messages/FormToggleEvent";
+import {incomingOptionsSet} from "./messages/OptionsSet";
 
 export enum IncomingSocketNames {
     Connection = "connection",
@@ -24,7 +25,8 @@ export enum IncomingSocketNames {
     Scroll = "scroll",
     Click = "click",
     Keyup = "input:text",
-    InputToggle = "input:toggles"
+    InputToggle = "input:toggles",
+    OptionsSet = "options:set",
 }
 
 export enum OutgoingSocketEvents {
@@ -48,6 +50,7 @@ export const socketHandlers$ = new BehaviorSubject({
     [IncomingSocketNames.Click]: incomingHandler$,
     [IncomingSocketNames.Keyup]: incomingKeyupHandler,
     [IncomingSocketNames.InputToggle]: incomingInputsToggles,
+    [IncomingSocketNames.OptionsSet]: incomingOptionsSet,
     [OutgoingSocketEvents.Scroll]: emitWithPathname(IncomingSocketNames.Scroll),
     [OutgoingSocketEvents.Click]: emitWithPathname(IncomingSocketNames.Click),
     [OutgoingSocketEvents.Keyup]: emitWithPathname(IncomingSocketNames.Keyup),

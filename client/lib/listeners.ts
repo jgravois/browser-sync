@@ -1,13 +1,13 @@
 import { merge } from "rxjs/observable/merge";
-import { getFormInputStream } from "./outgoing.form-inputs";
-import { getClickStream } from "./outgoing.clicks";
-import { getScrollStream } from "./outgoing.scroll";
-import { getFormTogglesStream } from "./outgoing.form-toggles";
+import { getFormInputStream } from "./listeners/form-inputs.listener";
+import { getClickStream } from "./listeners/clicks.listener";
+import { getScrollStream } from "./listeners/scroll.listener";
+import { getFormTogglesStream } from "./listeners/form-toggles.listener";
 import { OutgoingSocketEvent } from "./socket-messages";
 import { Observable } from "rxjs/Observable";
 import {Inputs} from "./index";
 
-export function initOutgoing(
+export function initListeners(
     window: Window,
     document: Document,
     socket$: Inputs['socket$'],
