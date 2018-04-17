@@ -19,6 +19,7 @@ import { share } from "rxjs/operators/share";
 import { filter } from "rxjs/operators/filter";
 import { pluck } from "rxjs/operators/pluck";
 import {tap} from "rxjs/operators/tap";
+import {of} from "rxjs/observable/of";
 
 export interface Inputs {
     window$: Observable<Window>;
@@ -36,7 +37,7 @@ const window$ = initWindow();
 const document$ = initDocument();
 const { socket$, io$ } = initSocket();
 const option$ = initOptions();
-const navigator$ = initOptions();
+const navigator$ = of(navigator);
 const notifyElement$ = initNotify(option$.getValue());
 const logInstance$ = initLogger(option$.getValue());
 const outgoing$ = initListeners(window, document, socket$, option$);
@@ -57,7 +58,6 @@ function getStream(name: string, inputs) {
     return function(handlers$, inputStream$) {
         return inputStream$.pipe(
             groupBy(([keyName]) => {
-                console.log(name, keyName);
                 return keyName;
             }),
             withLatestFrom(handlers$),
@@ -84,6 +84,7 @@ const output$ = getStream("[socket]", inputs)(
     socketHandlers$,
     merge(inputs.socket$, outgoing$)
 );
+
 const effect$ = getStream("[effect]", inputs)(combinedEffectHandler$, output$);
 const dom$ = getStream("[dom-effect]", inputs)(domHandlers$, effect$);
 

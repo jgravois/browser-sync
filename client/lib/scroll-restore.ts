@@ -55,18 +55,18 @@ export function initWindowName(window: Window) {
 }
 
 export const scrollRestoreHandlers$ = new BehaviorSubject({
-    [EffectNames.SetOptions]: (xs, inputs: Inputs) => {
-        return xs.pipe(
-            withLatestFrom(inputs.window$),
-            take(1),
-            mergeMap(([options, window]) => {
-                if (options.scrollRestoreTechnique === "window.name") {
-                    return initWindowName(window);
-                }
-                return empty();
-            })
-        );
-    },
+    // [EffectNames.SetOptions]: (xs, inputs: Inputs) => {
+    //     return xs.pipe(
+    //         withLatestFrom(inputs.window$),
+    //         take(1),
+    //         mergeMap(([options, window]) => {
+    //             if (options.scrollRestoreTechnique === "window.name") {
+    //                 return initWindowName(window);
+    //             }
+    //             return empty();
+    //         })
+    //     );
+    // },
     /**
      * Save the current scroll position
      * before the browser is reloaded (via window.location.reload(true))
