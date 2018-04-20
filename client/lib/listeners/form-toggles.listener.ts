@@ -4,49 +4,49 @@ import { Observable } from "rxjs/Observable";
 import { createTimedBooleanSwitch } from "../utils";
 import * as FormToggleEvent from "../messages/FormToggleEvent";
 import { filter } from "rxjs/operators/filter";
+import { skip } from "rxjs/operators/skip";
+import { pluck } from "rxjs/operators/pluck";
+import { distinctUntilChanged } from "rxjs/operators/distinctUntilChanged";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { map } from "rxjs/operators/map";
-import { share } from "rxjs/operators/share";
+import { switchMap } from "rxjs/operators/switchMap";
+import {Inputs} from "../index";
+import {empty} from "rxjs/observable/empty";
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 export function getFormTogglesStream(
     document: Document,
-    socket$
-): Observable<OutgoingSocketEvent> {
+    socket$: Inputs['socket$'],
+    option$: Inputs['option$']): Observable<OutgoingSocketEvent> {
     const canSync$ = createTimedBooleanSwitch(
         socket$.pipe(
             filter(([name]) => name === IncomingSocketNames.InputToggle)
         )
     );
-    return inputObservable(document).pipe(
-        withLatestFrom(canSync$),
-        filter(([, canSync]) => canSync),
-        map((incoming): OutgoingSocketEvent => {
-            const keyupEvent: { target: HTMLInputElement } = incoming[0];
-            const { target } = keyupEvent;
-            const data = getElementData(target);
 
-            return FormToggleEvent.outgoing(data, {
-                type: target.type,
-                checked: target.checked,
-                value: target.value
-            });
+    return option$.pipe(
+        skip(1),
+        pluck('ghostMode', 'forms', 'toggles'),
+        distinctUntilChanged(),
+        switchMap((canToggle) => {
+            if (!canToggle) {
+                return empty();
+            }
+            return fromEvent(document, "change", true).pipe(
+                map((e: Event) => e.target || e.srcElement)
+                , filter((elem: HTMLInputElement) => elem.tagName === 'SELECT')
+                , withLatestFrom(canSync$)
+                , filter(([, canSync]) => canSync)
+                , map((elem: HTMLInputElement) => {
+                    const data = getElementData(elem);
+
+                    return FormToggleEvent.outgoing(data, {
+                        type: elem.type,
+                        checked: elem.checked,
+                        value: elem.value
+                    });
+                })
+            )
         })
     );
-}
-
-function inputObservable(document: Document) {
-    return Observable.create(obs => {
-        document.body.addEventListener(
-            "change",
-            function(event) {
-                const elem = <HTMLInputElement>(event.target ||
-                    event.srcElement);
-                // todo(Shane): which other elements emit a change event that needs to be propagated
-                if (elem.tagName === "SELECT") {
-                    obs.next({ target: event.target });
-                }
-            },
-            true
-        );
-    }).pipe(share());
 }
