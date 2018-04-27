@@ -6,31 +6,32 @@ import * as ClickEvent from "../messages/ClickEvent";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { filter } from "rxjs/operators/filter";
 import { map } from "rxjs/operators/map";
-import {Inputs} from "../index";
-import {pluck} from "rxjs/operators/pluck";
-import {skip} from "rxjs/operators/skip";
-import {distinctUntilChanged} from "rxjs/operators/distinctUntilChanged";
-import {switchMap} from "rxjs/operators/switchMap";
-import {fromEvent} from "rxjs/observable/fromEvent";
-import {empty} from "rxjs/observable/empty";
+import { Inputs } from "../index";
+import { pluck } from "rxjs/operators/pluck";
+import { skip } from "rxjs/operators/skip";
+import { distinctUntilChanged } from "rxjs/operators/distinctUntilChanged";
+import { switchMap } from "rxjs/operators/switchMap";
+import { fromEvent } from "rxjs/observable/fromEvent";
+import { empty } from "rxjs/observable/empty";
 
 export function getClickStream(
     document: Document,
-    socket$: Inputs['socket$'],
-    option$: Inputs['option$']): Observable<OutgoingSocketEvent> {
+    socket$: Inputs["socket$"],
+    option$: Inputs["option$"]
+): Observable<OutgoingSocketEvent> {
     const canSync$ = createTimedBooleanSwitch(
         socket$.pipe(filter(([name]) => name === IncomingSocketNames.Click))
     );
 
     return option$.pipe(
         skip(1), // initial option set before the connection event
-        pluck('ghostMode', 'clicks'),
+        pluck("ghostMode", "clicks"),
         distinctUntilChanged(),
-        switchMap((canClick) => {
+        switchMap(canClick => {
             if (!canClick) {
                 return empty();
             }
-            return fromEvent(document, 'click', true).pipe(
+            return fromEvent(document, "click", true).pipe(
                 map((e: Event) => e.target),
                 filter((target: any) => {
                     if (target.tagName === "LABEL") {
@@ -48,5 +49,5 @@ export function getClickStream(
                 })
             );
         })
-    )
+    );
 }

@@ -1,7 +1,7 @@
-import {map} from "rxjs/operators/map";
-import {Events} from "../dom-effects";
-import {tap} from "rxjs/operators/tap";
-import {Observable} from "rxjs/Rx";
+import { map } from "rxjs/operators/map";
+import { Events } from "../dom-effects";
+import { tap } from "rxjs/operators/tap";
+import { Observable } from "rxjs/Rx";
 import * as Log from "../log";
 
 export interface StyleSetPayload {
@@ -15,12 +15,10 @@ export interface StyleSetPayload {
 export function styleSetDomEffect(xs: Observable<StyleSetPayload>) {
     return xs.pipe(
         tap(event => {
-            const {style, styleName, newValue} = event;
+            const { style, styleName, newValue } = event;
             style[styleName] = newValue;
         }),
-        map(e =>
-            Log.consoleDebug(`[StyleSet] ${e.styleName} = ${e.pathName}`)
-        )
+        map(e => Log.consoleDebug(`[StyleSet] ${e.styleName} = ${e.pathName}`))
     );
 }
 

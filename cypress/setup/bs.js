@@ -4,7 +4,7 @@ module.exports = function(setup, specs) {
     const bs      = require('../../').create();
 
     bs.init(setup, function(err, bs) {
-        return cypress.run({
+        return cypress.open({
             spec: specs,
             env: `BS_URL=${bs.options.getIn(['urls', 'local'])}`
         })

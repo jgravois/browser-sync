@@ -4,7 +4,7 @@ import { ignoreElements } from "rxjs/operators/ignoreElements";
 import { tap } from "rxjs/operators/tap";
 import { map } from "rxjs/operators/map";
 import { EffectNames } from "../effects";
-import {consoleInfo} from "../log";
+import { consoleInfo } from "../log";
 
 /**
  * Set the local client options

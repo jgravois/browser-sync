@@ -5,13 +5,13 @@ import { getScrollStream } from "./listeners/scroll.listener";
 import { getFormTogglesStream } from "./listeners/form-toggles.listener";
 import { OutgoingSocketEvent } from "./socket-messages";
 import { Observable } from "rxjs/Observable";
-import {Inputs} from "./index";
+import { Inputs } from "./index";
 
 export function initListeners(
     window: Window,
     document: Document,
-    socket$: Inputs['socket$'],
-    option$: Inputs['option$'],
+    socket$: Inputs["socket$"],
+    option$: Inputs["option$"]
 ): Observable<OutgoingSocketEvent> {
     const merged$ = merge(
         getScrollStream(window, document, socket$, option$),

@@ -1,7 +1,7 @@
-import {map} from "rxjs/operators/map";
-import {tap} from "rxjs/operators/tap";
-import {Observable} from "rxjs/Rx";
-import {Events} from "../dom-effects";
+import { map } from "rxjs/operators/map";
+import { tap } from "rxjs/operators/tap";
+import { Observable } from "rxjs/Rx";
+import { Events } from "../dom-effects";
 import * as Log from "../log";
 
 export interface PropSetPayload {
@@ -18,11 +18,7 @@ export function propSetDomEffect(xs: Observable<PropSetPayload>) {
             target[prop] = value;
         }),
         map(e =>
-            Log.consoleInfo(
-                `[PropSet]`,
-                e.target,
-                `${e.prop} = ${e.pathname}`
-            )
+            Log.consoleInfo(`[PropSet]`, e.target, `${e.prop} = ${e.pathname}`)
         )
     );
 }

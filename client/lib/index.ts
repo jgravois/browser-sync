@@ -18,8 +18,8 @@ import { mergeMap } from "rxjs/operators/mergeMap";
 import { share } from "rxjs/operators/share";
 import { filter } from "rxjs/operators/filter";
 import { pluck } from "rxjs/operators/pluck";
-import {tap} from "rxjs/operators/tap";
-import {of} from "rxjs/observable/of";
+import { tap } from "rxjs/operators/tap";
+import { of } from "rxjs/observable/of";
 
 export interface Inputs {
     window$: Observable<Window>;

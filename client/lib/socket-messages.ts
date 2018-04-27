@@ -13,7 +13,7 @@ import { incomingFileReload } from "./messages/FileReload";
 import { incomingConnection } from "./messages/Connection";
 import { incomingDisconnect } from "./messages/Disconnect";
 import { incomingInputsToggles } from "./messages/FormToggleEvent";
-import {incomingOptionsSet} from "./messages/OptionsSet";
+import { incomingOptionsSet } from "./messages/OptionsSet";
 
 export enum IncomingSocketNames {
     Connection = "connection",
@@ -26,7 +26,7 @@ export enum IncomingSocketNames {
     Click = "click",
     Keyup = "input:text",
     InputToggle = "input:toggles",
-    OptionsSet = "options:set",
+    OptionsSet = "options:set"
 }
 
 export enum OutgoingSocketEvents {

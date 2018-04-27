@@ -10,14 +10,15 @@ import { distinctUntilChanged } from "rxjs/operators/distinctUntilChanged";
 import { withLatestFrom } from "rxjs/operators/withLatestFrom";
 import { map } from "rxjs/operators/map";
 import { switchMap } from "rxjs/operators/switchMap";
-import {Inputs} from "../index";
-import {empty} from "rxjs/observable/empty";
-import {fromEvent} from "rxjs/observable/fromEvent";
+import { Inputs } from "../index";
+import { empty } from "rxjs/observable/empty";
+import { fromEvent } from "rxjs/observable/fromEvent";
 
 export function getFormTogglesStream(
     document: Document,
-    socket$: Inputs['socket$'],
-    option$: Inputs['option$']): Observable<OutgoingSocketEvent> {
+    socket$: Inputs["socket$"],
+    option$: Inputs["option$"]
+): Observable<OutgoingSocketEvent> {
     const canSync$ = createTimedBooleanSwitch(
         socket$.pipe(
             filter(([name]) => name === IncomingSocketNames.InputToggle)
@@ -26,18 +27,18 @@ export function getFormTogglesStream(
 
     return option$.pipe(
         skip(1),
-        pluck('ghostMode', 'forms', 'toggles'),
+        pluck("ghostMode", "forms", "toggles"),
         distinctUntilChanged(),
-        switchMap((canToggle) => {
+        switchMap(canToggle => {
             if (!canToggle) {
                 return empty();
             }
             return fromEvent(document, "change", true).pipe(
-                map((e: Event) => e.target || e.srcElement)
-                , filter((elem: HTMLInputElement) => elem.tagName === 'SELECT')
-                , withLatestFrom(canSync$)
-                , filter(([, canSync]) => canSync)
-                , map((elem: HTMLInputElement) => {
+                map((e: Event) => e.target || e.srcElement),
+                filter((elem: HTMLInputElement) => elem.tagName === "SELECT"),
+                withLatestFrom(canSync$),
+                filter(([, canSync]) => canSync),
+                map(([elem, canSync]: [HTMLInputElement, boolean]) => {
                     const data = getElementData(elem);
 
                     return FormToggleEvent.outgoing(data, {
@@ -46,7 +47,7 @@ export function getFormTogglesStream(
                         value: elem.value
                     });
                 })
-            )
+            );
         })
     );
 }

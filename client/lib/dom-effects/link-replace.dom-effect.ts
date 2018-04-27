@@ -1,11 +1,11 @@
-import {map} from "rxjs/operators/map";
-import {Inputs} from "../index";
-import {filter} from "rxjs/operators/filter";
-import {withLatestFrom} from "rxjs/operators/withLatestFrom";
-import {Observable} from "rxjs/Rx";
+import { map } from "rxjs/operators/map";
+import { Inputs } from "../index";
+import { filter } from "rxjs/operators/filter";
+import { withLatestFrom } from "rxjs/operators/withLatestFrom";
+import { Observable } from "rxjs/Rx";
 import * as Log from "../log";
-import {pluck} from "rxjs/operators/pluck";
-import {Events} from "../dom-effects";
+import { pluck } from "rxjs/operators/pluck";
+import { Events } from "../dom-effects";
 
 export type LinkReplacePayload = {
     target: HTMLLinkElement;
@@ -15,7 +15,10 @@ export type LinkReplacePayload = {
     basename: string;
 };
 
-export function linkReplaceDomEffect(xs: Observable<LinkReplacePayload>, inputs: Inputs) {
+export function linkReplaceDomEffect(
+    xs: Observable<LinkReplacePayload>,
+    inputs: Inputs
+) {
     return xs.pipe(
         withLatestFrom<LinkReplacePayload, any>(
             inputs.option$.pipe(pluck("injectNotification"))

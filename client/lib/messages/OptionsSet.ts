@@ -1,7 +1,7 @@
-import {map} from "rxjs/operators/map";
-import {Observable} from "rxjs/Rx";
-import {setOptions} from "../effects/set-options.effect";
-import {tap} from "rxjs/operators/tap";
+import { map } from "rxjs/operators/map";
+import { Observable } from "rxjs/Rx";
+import { setOptions } from "../effects/set-options.effect";
+import { tap } from "rxjs/operators/tap";
 
 export interface Payload {
     options: IBrowserSyncOptions;
@@ -12,7 +12,5 @@ export interface Payload {
 type IncomingPayload = Payload;
 
 export function incomingOptionsSet(xs: Observable<IncomingPayload>) {
-    return xs.pipe(
-        map((event) => setOptions(event.options))
-    );
+    return xs.pipe(map(event => setOptions(event.options)));
 }
