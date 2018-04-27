@@ -18,7 +18,7 @@ export function styleSetDomEffect(xs: Observable<StyleSetPayload>) {
             const { style, styleName, newValue } = event;
             style[styleName] = newValue;
         }),
-        map(e => Log.consoleDebug(`[StyleSet] ${e.styleName} = ${e.pathName}`))
+        map(e => Log.consoleInfo(`[StyleSet] ${e.styleName} = ${e.pathName}`))
     );
 }
 
