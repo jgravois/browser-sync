@@ -21,6 +21,7 @@ export interface OutgoingPayload {
     position: Data;
     tagName: string;
     index: number;
+    mapped: boolean;
 }
 
 export interface IncomingPayload {
@@ -34,9 +35,10 @@ export interface IncomingPayload {
 export function outgoing(
     data: Data,
     tagName: string,
-    index: number
+    index: number,
+    mapped: boolean = false
 ): [OutgoingSocketEvents.Scroll, OutgoingPayload] {
-    return [OutgoingSocketEvents.Scroll, { position: data, tagName, index }];
+    return [OutgoingSocketEvents.Scroll, { position: data, tagName, index, mapped }];
 }
 
 export function incomingScrollHandler(

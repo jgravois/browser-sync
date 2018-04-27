@@ -27,6 +27,8 @@ export function getScrollStream(
         socket$.pipe(filter(([name]) => name === IncomingSocketNames.Scroll))
     );
 
+    const elemMap = option$.getValue().scrollElementMapping.map(x => document.querySelector(x));
+
     return option$.pipe(
         skip(1), // initial option set before the connection event
         pluck("ghostMode", "scroll"),
@@ -36,8 +38,9 @@ export function getScrollStream(
             return fromEvent(document, "scroll", true).pipe(
                 map((e: Event) => e.target),
                 withLatestFrom(canSync$),
-                filter(([, canSync]) => canSync),
-                map(([target]) => {
+                filter(([, canSync]) => Boolean(canSync)),
+                map(([target, canSync]: [EventTarget, boolean]) => {
+
                     if (target === document) {
                         return ScrollEvent.outgoing(
                             getScrollPosition(window, document),
@@ -55,7 +58,8 @@ export function getScrollStream(
                     return ScrollEvent.outgoing(
                         getScrollPositionForElement(target),
                         target.tagName,
-                        index
+                        index,
+                        (elemMap.indexOf(target) > -1) ? true : false
                     );
                 })
             );
